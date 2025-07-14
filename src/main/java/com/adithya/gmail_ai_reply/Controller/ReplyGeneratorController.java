@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * REST Controller for handling email content
+ */
 @RestController
 @RequestMapping("/api/email")
 @AllArgsConstructor
@@ -14,12 +18,14 @@ public class ReplyGeneratorController {
 
     private final ReplyGeneratorService replyGeneratorService;
 
-    // Handles incoming email context
+    /**
+     * @param emailRequest - email content
+     * @return ResponseEntity with AI-generated reply
+     */
     @PostMapping("/generate")
     public ResponseEntity<String> generateEmail(@RequestBody EmailRequest emailRequest) {
         String response = replyGeneratorService.generateReply(emailRequest);
         return ResponseEntity.ok(response);
     }
-
 }
 
