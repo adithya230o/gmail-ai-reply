@@ -34,7 +34,10 @@ public class ReplyGeneratorService {
     public String generateReply(EmailRequest emailRequest) {
 
         //Build prompt
-        String prompt = "Generate a professional email reply without a a subject line, for the following email content : \n"
+        String prompt = "Generate a professional email reply without a subject line. " +
+                "DONT MAKE IT LOOK LIKE AI GENERATED. " +
+                "Give me just the reply so that I can directly copy and paste it." +
+                "\nEmail content : \n"
                 + emailRequest.getEmailContent();
 
 
