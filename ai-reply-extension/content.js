@@ -2,43 +2,48 @@ console.log("Extension loaded!");
 
 
 //track mutations
-const observer = new MutationObserver((mutations) => {    //track all mutation and store it as an arr called 'mutations'
-    for(const mutation of mutations) {
-        const addedNodes = Array.from(mutation.addedNodes);   //.from -> conv NodeList to arr of mutations that were added
-        
-        const hasComposeElements = addedNodes.some(node => {  //.some -> js method, to check - has atleast one?
-            if (node.nodeType !== Node.ELEMENT_NODE) return false;
-            
-            // Match compose box nodes
-            const isComposeMatch = node.matches('.aDh, .btC, [role="dialog"]') || node.querySelector('.aDh, .btC, [role="dialog"]');
-            
-            if(!isComposeMatch) return false;
+const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {                         //iterate through every mutation
 
-            // Check for 'New Message' text inside any compose dialog
-            const dialogNode = node.matches('[role="dialog"]') ? node : node.querySelector('[role="dialog"]');
-            if (dialogNode) {
-                const newMsgSpan = dialogNode.querySelector('.aYF span');
-                if (newMsgSpan && newMsgSpan.textContent.includes('New Message')) {
-                    console.log("Skipping 'New Message' dialog");
-                    return false;
-                }
-            }
+        const addedNodes = Array.from(mutation.addedNodes);     // Nodelist of newly added mutations
 
-            return true;
-        });
+        const hasComposeElements = addedNodes.some(node =>      //.some -> has atleast one ele that matches condition?
+            node.nodeType === Node.ELEMENT_NODE &&
+            (node.matches('.aDh, .btC, [role="dialog"]') || node.querySelector('.aDh, .btC, [role="dialog"]'))
+        );
 
         if (hasComposeElements) {
-            console.log("Compose Window Detected");
+            const containsVisibleSubjectBox = addedNodes.some(node => {         //to check if it is a new compose box
+                if (node.nodeType !== Node.ELEMENT_NODE) return false;
+
+                const subjectInput = node.matches('input[name="subjectbox"]')
+                    ? node
+                    : node.querySelector('input[name="subjectbox"]');
+
+                if (!subjectInput) return false;
+
+                //checks if the subject field is visible on screen(might ne invisble for replies)
+                const style = window.getComputedStyle(subjectInput);
+                return style.display !== 'none' && style.visibility !== 'hidden' && subjectInput.offsetParent !== null;
+            });
+
+            if (containsVisibleSubjectBox) {
+                console.log("New mail -> skipping injection");
+                continue;
+            }
+
+            console.log("Reply Window -> inject 'AI Reply' button");
             setTimeout(injectButton, 100);
         }
     }
 });
 
-//tells obj what to observe
+//tells observer what things to observe
 observer.observe(document.body, {
     childList: true,
     subtree: true
 });
+
 
 
 
@@ -55,7 +60,7 @@ function injectButton() {
         return;
     }
 
-    console.log("Toolbar found, creating AI button");
+    console.log("Creating AI button");
     const button = createAIButton();
     button.classList.add('ai-reply-button');
 
@@ -123,7 +128,7 @@ function findComposeToolbar() {
     for (const selector of selectors) {
         const toolbar = document.querySelector(selector);
         if (toolbar) {
-            console.log("found toolbar");
+            console.log("Found toolbar");
             return toolbar;
         }
     }

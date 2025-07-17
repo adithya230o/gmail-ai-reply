@@ -1,13 +1,14 @@
 package com.adithya.gmail_ai_reply.Service;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.adithya.gmail_ai_reply.DTO.EmailRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Map;
 
 
 /**
@@ -34,11 +35,11 @@ public class ReplyGeneratorService {
     public String generateReply(EmailRequest emailRequest) {
 
         //Build prompt
-        String prompt = "Generate a professional email reply without a subject line. " +
-                "DONT MAKE IT LOOK LIKE AI GENERATED. " +
-                "Give me just the reply so that I can directly copy and paste it." +
-                "\nEmail content : \n"
-                + emailRequest.getEmailContent();
+        String prompt = "Write a professional email reply based on the content below. " +
+                "Do not include a subject line. " +
+                "Ensure the response sounds natural and human-written — avoid any tone that feels AI-generated. " +
+                "Return only the reply body, formatted so it can be directly copied and pasted.\n" +
+                "Email content:\n" + emailRequest.getEmailContent();
 
 
         // Craft a request
