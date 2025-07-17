@@ -66,6 +66,9 @@ function injectButton() {
 
     //track changes in button
     button.addEventListener('click', async () => {
+
+        const startTime = performance.now();  // Start timer
+
         try {
             button.innerHTML = 'Generating...';
             button.disabled = true;                //to prevent multiple clicks for same mail while waiting for response
@@ -83,6 +86,20 @@ function injectButton() {
                     emailContent: emailContent
                 })
             });
+
+            if (response.status === 429) {
+                const errorMsg = await response.text();
+
+                if (errorMsg === "Minute limit exceeded") {
+                    alert("Limit of 15 requests per minute reached. Please wait 1 minute and try again.");
+                } else if (errorMsg === "Daily limit exceeded") {
+                    alert("Daily limit of 200 requests reached. Try again tomorrow.");
+                } else {
+                    alert("Rate limit reached. Try again later.");
+                }
+
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error('API Request Failed');
@@ -102,6 +119,11 @@ function injectButton() {
             } else {
                 console.error('Compose box was not found');
             }
+
+            const endTime = performance.now();  // End timer
+            const timeTaken = ((endTime - startTime) / 1000).toFixed(2);  // in seconds
+            alert(`Reply generated in ${timeTaken} seconds`);
+
         } catch (error) {
             console.error(error);
             alert('Failed to generate reply');
