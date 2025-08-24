@@ -184,7 +184,7 @@ function createAIButton() {
    button.style.backgroundColor = '#0b57d0';
    button.innerHTML = 'AI Reply';
    button.setAttribute('role','button');
-   button.setAttribute('data-tooltip','Generate AI Reply');
+   button.setAttribute('data-tooltip','Genemail-ai-reply-extrate AI Reply');
    return button;
 }
 

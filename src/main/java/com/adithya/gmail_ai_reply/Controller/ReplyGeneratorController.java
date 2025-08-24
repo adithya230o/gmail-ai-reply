@@ -14,10 +14,15 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * REST Controller for handling email content
  */
+@CrossOrigin(
+        origins = "https://mail.google.com",
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
+)
 @RestController
 @RequestMapping("/api/email")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class ReplyGeneratorController {
 
     private final ReplyGeneratorService replyGeneratorService;
