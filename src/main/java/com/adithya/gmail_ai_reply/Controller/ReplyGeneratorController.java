@@ -47,4 +47,3 @@ public class ReplyGeneratorController {
         return ResponseEntity.ok(response);
     }
 }
-

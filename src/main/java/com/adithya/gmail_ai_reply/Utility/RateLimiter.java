@@ -18,8 +18,8 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class RateLimiter {
 
-    private final int MAX_PER_MINUTE = 14;
-    private final int MAX_PER_DAY = 199;
+    private final int MAX_PER_MINUTE = 10;
+    private final int MAX_PER_DAY = 300;
 
     private final Map<String, List<Instant>> minuteTracker = new ConcurrentHashMap<>();
     private final Map<String, List<Instant>> dailyTracker = new ConcurrentHashMap<>();
@@ -34,15 +34,12 @@ public class RateLimiter {
 
         if (dailyRequests.size() >= MAX_PER_DAY) return 3;
 
-
         // Minute-level check
         minuteTracker.putIfAbsent(userKey, new ArrayList<>());
         List<Instant> minuteRequests = minuteTracker.get(userKey);
         minuteRequests.removeIf(t -> t.isBefore(now.minusSeconds(60)));
 
         if (minuteRequests.size() >= MAX_PER_MINUTE) return 2;
-
-
 
         // Add current request
         minuteRequests.add(now);
