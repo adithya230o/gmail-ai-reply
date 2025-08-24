@@ -46,4 +46,13 @@ public class ReplyGeneratorController {
         String response = replyGeneratorService.generateReply(emailRequest);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Endpoint to warmup the backend server
+     * @return ResponseEntity
+     */
+    @GetMapping("/warmup")
+    public ResponseEntity<String> warmup() {
+        return ResponseEntity.ok("Backend warmed up");
+    }
 }

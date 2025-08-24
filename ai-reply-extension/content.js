@@ -1,5 +1,22 @@
 console.log("Extension loaded!");
 
+const PREWARM_INTERVAL = 13 * 60 * 1000;
+
+async function prewarmBackend() {
+    try {
+        await fetch('http://localhost:8082/api/email/warmup');
+        console.log("Backend prewarm call sent");
+        chrome.storage.local.set({ lastPrewarm: Date.now() });
+    } catch (err) {
+        console.error("Prewarm call failed", err);
+    }
+}
+
+// Gmail tab loaded → fire prewarm immediately
+prewarmBackend();
+
+// Keep backend alive while Gmail tab is open
+setInterval(prewarmBackend, PREWARM_INTERVAL);
 
 //track mutations
 const observer = new MutationObserver((mutations) => {
@@ -76,7 +93,7 @@ function injectButton() {
 
             //get emailContent and send it to backend
             const emailContent = getEmailContent();
-            const response = await fetch( 'http://localhost:8080/api/email/generate', {
+            const response = await fetch( 'http://localhost:8082/api/email/generate', {
                 // (await) -> donot execute until the backend logic is executed
                 method: 'POST',
                 headers: {
